@@ -1,0 +1,28 @@
+# Grievance Management System - Docker Compose Configuration
+# Use this file as a reference for container orchestration
+
+version: '3.8'
+
+services:
+  grievance-system:
+    build: .
+    container_name: grievance-management-system
+    ports:
+      - "8000:8000"   # API Server
+      - "8501:8501"   # Streamlit Frontend
+    volumes:
+      - ./data:/app/data
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+      - DATABASE_PATH=/app/data/grievance_system.db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  default:
+    name: grievance-network
